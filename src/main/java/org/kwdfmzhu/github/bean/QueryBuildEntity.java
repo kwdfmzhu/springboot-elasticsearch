@@ -3,8 +3,8 @@ package org.kwdfmzhu.github.bean;
 import org.apache.lucene.search.join.ScoreMode;
 import org.assertj.core.util.Lists;
 import org.elasticsearch.index.query.*;
-import org.kwdfmzhu.github.enums.ESQueryBuildClausesEnum;
-import org.kwdfmzhu.github.enums.ESQueryBuildTypeEnum;
+import org.kwdfmzhu.github.enums.ClausesEnum;
+import org.kwdfmzhu.github.enums.QueryTypeEnum;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -12,10 +12,10 @@ import java.util.List;
 /**
  * Created by kwdfmzhu on 2017/7/5.
  */
-public class ESQueryBuildEntity {
-    private List<ESClausesTypeValue> mustCTVList;
-    private List<ESClausesTypeValue> mustNotCTVList;
-    private List<ESClausesTypeValue> shouldCTVList;
+public class QueryBuildEntity {
+    private List<ClausesValue> mustCTVList;
+    private List<ClausesValue> mustNotCTVList;
+    private List<ClausesValue> shouldCTVList;
 
     private List<MatchQueryBuilder> matchQueryBuilderList;
     private List<RangeQueryBuilder> rangeQueryBuilderList;
@@ -26,7 +26,7 @@ public class ESQueryBuildEntity {
     private int searchFromPosition = 0;
     private int searchSize = 10000;
 
-    public ESQueryBuildEntity() {
+    public QueryBuildEntity() {
         this.mustCTVList = Lists.newArrayList();
         this.mustNotCTVList = Lists.newArrayList();
         this.shouldCTVList = Lists.newArrayList();
@@ -38,18 +38,18 @@ public class ESQueryBuildEntity {
                 && CollectionUtils.isEmpty(this.shouldCTVList);
     }
 
-    private void transform(List<ESClausesTypeValue> list) {
+    private void transform(List<ClausesValue> list) {
         this.matchQueryBuilderList = Lists.newArrayList();
         this.rangeQueryBuilderList = Lists.newArrayList();
         this.wildcardQueryBuilderList = Lists.newArrayList();
         this.nestedQueryBuilderList = Lists.newArrayList();
         list.forEach(esctv -> {
-            ESQueryBuildTypeEnum type = esctv.getType();
-            if(type.equals(ESQueryBuildTypeEnum.BASE)) {
+            QueryTypeEnum type = esctv.getType();
+            if(type.equals(QueryTypeEnum.BASE)) {
                 this.matchQueryBuilderList.add(QueryBuilders.matchQuery(esctv.getName(), esctv.getValue().toString()));
             }
-            if(type.equals(ESQueryBuildTypeEnum.RANGE)) {
-                RangeQueryBuilderEntity entity = (RangeQueryBuilderEntity)esctv.getValue();
+            if(type.equals(QueryTypeEnum.RANGE)) {
+                RangeQueryTypeEntity entity = (RangeQueryTypeEntity)esctv.getValue();
                 RangeQueryBuilder queryBuilder = QueryBuilders.rangeQuery(esctv.getName());
                 if(entity.getFrom() != null)
                     queryBuilder.from(entity.getFrom());
@@ -59,22 +59,22 @@ public class ESQueryBuildEntity {
                 queryBuilder.includeUpper(entity.isIncludeUpper());
                 this.rangeQueryBuilderList.add(queryBuilder);
             }
-            if(type.equals(ESQueryBuildTypeEnum.WILDCARD)) {
+            if(type.equals(QueryTypeEnum.WILDCARD)) {
                 this.wildcardQueryBuilderList.add(QueryBuilders.wildcardQuery(esctv.getName(), esctv.toString()));
             }
-            if(type.equals(ESQueryBuildTypeEnum.NESTED)) {
+            if(type.equals(QueryTypeEnum.NESTED)) {
                 this.nestedQueryBuilderList.add(QueryBuilders.nestedQuery(
                         esctv.getName(),
-                        ((ESQueryBuildEntity)esctv.getValue()).toBoolQueryBuilder(),
+                        ((QueryBuildEntity)esctv.getValue()).toBoolQueryBuilder(),
                         ScoreMode.None
                 ));
             }
         });
     }
 
-    private BoolQueryBuilder getSubBoolQueryBuilder(ESQueryBuildClausesEnum clauses) {
+    private BoolQueryBuilder getSubBoolQueryBuilder(ClausesEnum clauses) {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
-        if(clauses.equals(ESQueryBuildClausesEnum.MUST)) {
+        if(clauses.equals(ClausesEnum.MUST)) {
             this.matchQueryBuilderList.forEach(matchQueryBuilder -> {
                 boolQueryBuilder.must(matchQueryBuilder);
             });
@@ -88,7 +88,7 @@ public class ESQueryBuildEntity {
                 boolQueryBuilder.must(nestedQueryBuilder);
             });
         }
-        if(clauses.equals(ESQueryBuildClausesEnum.SHOULD)) {
+        if(clauses.equals(ClausesEnum.SHOULD)) {
             this.matchQueryBuilderList.forEach(matchQueryBuilder -> {
                 boolQueryBuilder.should(matchQueryBuilder);
             });
@@ -102,7 +102,7 @@ public class ESQueryBuildEntity {
                 boolQueryBuilder.should(nestedQueryBuilder);
             });
         }
-        if(clauses.equals(ESQueryBuildClausesEnum.MUSTNOT)) {
+        if(clauses.equals(ClausesEnum.MUSTNOT)) {
             this.matchQueryBuilderList.forEach(matchQueryBuilder -> {
                 boolQueryBuilder.mustNot(matchQueryBuilder);
             });
@@ -126,15 +126,15 @@ public class ESQueryBuildEntity {
         BoolQueryBuilder subBoolQueryBuilder = null;
 
         this.transform(this.mustCTVList);
-        subBoolQueryBuilder = this.getSubBoolQueryBuilder(ESQueryBuildClausesEnum.MUST);
+        subBoolQueryBuilder = this.getSubBoolQueryBuilder(ClausesEnum.MUST);
         this.boolQueryBuilder.must(subBoolQueryBuilder);
 
         this.transform(this.shouldCTVList);
-        subBoolQueryBuilder = this.getSubBoolQueryBuilder(ESQueryBuildClausesEnum.SHOULD);
+        subBoolQueryBuilder = this.getSubBoolQueryBuilder(ClausesEnum.SHOULD);
         this.boolQueryBuilder.must(subBoolQueryBuilder);
 
         this.transform(this.mustNotCTVList);
-        subBoolQueryBuilder = this.getSubBoolQueryBuilder(ESQueryBuildClausesEnum.MUSTNOT);
+        subBoolQueryBuilder = this.getSubBoolQueryBuilder(ClausesEnum.MUSTNOT);
         this.boolQueryBuilder.must(subBoolQueryBuilder);
 
         return this.boolQueryBuilder;
@@ -145,39 +145,39 @@ public class ESQueryBuildEntity {
         return this.boolQueryBuilder;
     }
 
-    public void addOneMustCTV(ESClausesTypeValue csv) {
+    public void addOneMustCTV(ClausesValue csv) {
         this.mustCTVList.add(csv);
     }
 
-    public void addOneShouldCTV(ESClausesTypeValue csv) {
+    public void addOneShouldCTV(ClausesValue csv) {
         this.shouldCTVList.add(csv);
     }
 
-    public void addOneMustNotCTV(ESClausesTypeValue csv) {
+    public void addOneMustNotCTV(ClausesValue csv) {
         this.mustNotCTVList.add(csv);
     }
 
-    public List<ESClausesTypeValue> getMustCTVList() {
+    public List<ClausesValue> getMustCTVList() {
         return mustCTVList;
     }
 
-    public void setMustCTVList(List<ESClausesTypeValue> mustCTVList) {
+    public void setMustCTVList(List<ClausesValue> mustCTVList) {
         this.mustCTVList = mustCTVList;
     }
 
-    public List<ESClausesTypeValue> getMustNotCTVList() {
+    public List<ClausesValue> getMustNotCTVList() {
         return mustNotCTVList;
     }
 
-    public void setMustNotCTVList(List<ESClausesTypeValue> mustNotCTVList) {
+    public void setMustNotCTVList(List<ClausesValue> mustNotCTVList) {
         this.mustNotCTVList = mustNotCTVList;
     }
 
-    public List<ESClausesTypeValue> getShouldCTVList() {
+    public List<ClausesValue> getShouldCTVList() {
         return shouldCTVList;
     }
 
-    public void setShouldCTVList(List<ESClausesTypeValue> shouldCTVList) {
+    public void setShouldCTVList(List<ClausesValue> shouldCTVList) {
         this.shouldCTVList = shouldCTVList;
     }
 

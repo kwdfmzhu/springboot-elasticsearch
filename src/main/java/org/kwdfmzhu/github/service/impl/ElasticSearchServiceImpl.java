@@ -15,16 +15,13 @@ import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.common.unit.TimeValue;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilder;
-import org.elasticsearch.search.aggregations.Aggregations;
-import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
 import org.elasticsearch.search.sort.SortBuilder;
 import org.elasticsearch.transport.client.PreBuiltTransportClient;
-import org.kwdfmzhu.github.bean.ESQueryBuildEntity;
-import org.kwdfmzhu.github.bean.ESSortBuildEntity;
-import org.kwdfmzhu.github.bean.ESSourceBuildEntity;
+import org.kwdfmzhu.github.bean.QueryBuildEntity;
+import org.kwdfmzhu.github.bean.SortBuildEntity;
+import org.kwdfmzhu.github.bean.SourceBuildEntity;
 import org.kwdfmzhu.github.service.ElasticSearchService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,9 +32,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by kwdfmzhu on 2017/7/5.
@@ -156,7 +151,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
         return;
     }
 
-    private SearchResponse search(String[] indices, String[] types, ESQueryBuildEntity entity) {
+    private SearchResponse search(String[] indices, String[] types, QueryBuildEntity entity) {
         QueryBuilder queryBuilder = this.getQueryBuilderWithEntity(entity);
         int from = entity.getSearchFromPosition();
         int size = entity.getSearchSize();
@@ -164,14 +159,14 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
     }
 
     @Override
-    public SearchResponse search(String index, String type, ESQueryBuildEntity entity) {
+    public SearchResponse search(String index, String type, QueryBuildEntity entity) {
         String[] indices = {index};
         String[] types = {type};
         return this.search(indices, types, entity);
     }
 
 
-    private SearchResponse search(String[] indices, String[] types, ESQueryBuildEntity QBEntity, ESSourceBuildEntity SBEntity) {
+    private SearchResponse search(String[] indices, String[] types, QueryBuildEntity QBEntity, SourceBuildEntity SBEntity) {
         QueryBuilder queryBuilder = this.getQueryBuilderWithEntity(QBEntity);
         SearchSourceBuilder sourceBuilder = this.getSourceBuilderWithEntity(SBEntity);
         int from = QBEntity.getSearchFromPosition();
@@ -180,21 +175,21 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
     }
 
     @Override
-    public SearchResponse search(String index, String type, ESQueryBuildEntity QBEntity, ESSourceBuildEntity SBEntity) {
+    public SearchResponse search(String index, String type, QueryBuildEntity QBEntity, SourceBuildEntity SBEntity) {
         String[] indices = {index};
         String[] types = {type};
         return this.search(indices, types, QBEntity, SBEntity);
     }
 
     @Override
-    public SearchResponse scrollSearch(String[] indices, String[] types, ESQueryBuildEntity QBEntity) {
-        ESSourceBuildEntity ScBEntity = new ESSourceBuildEntity();
-        ESSortBuildEntity StBEntity = new ESSortBuildEntity();
+    public SearchResponse scrollSearch(String[] indices, String[] types, QueryBuildEntity QBEntity) {
+        SourceBuildEntity ScBEntity = new SourceBuildEntity();
+        SortBuildEntity StBEntity = new SortBuildEntity();
         return this.getScrollSearchResponse(indices, types, QBEntity, ScBEntity, StBEntity);
     }
 
     @Override
-    public SearchResponse scrollSearch(String[] indices, String[] types, ESQueryBuildEntity QBEntity, ESSourceBuildEntity ScBEntity, ESSortBuildEntity StBEntity) {
+    public SearchResponse scrollSearch(String[] indices, String[] types, QueryBuildEntity QBEntity, SourceBuildEntity ScBEntity, SortBuildEntity StBEntity) {
         return this.getScrollSearchResponse(indices, types, QBEntity, ScBEntity, StBEntity);
     }
 
@@ -226,7 +221,7 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
     }
 
     private SearchResponse getScrollSearchResponse(String[] indices, String[] types,
-                                                   ESQueryBuildEntity QBEntity, ESSourceBuildEntity ScBEntity, ESSortBuildEntity StBEntity) {
+                                                   QueryBuildEntity QBEntity, SourceBuildEntity ScBEntity, SortBuildEntity StBEntity) {
 
         QueryBuilder queryBuilder = this.getQueryBuilderWithEntity(QBEntity);
         SearchSourceBuilder sourceBuilder = this.getSourceBuilderWithEntity(ScBEntity);
@@ -251,15 +246,15 @@ public class ElasticSearchServiceImpl implements ElasticSearchService{
         return requestBuilder.get();
     }
 
-    private QueryBuilder getQueryBuilderWithEntity(ESQueryBuildEntity entity) {
+    private QueryBuilder getQueryBuilderWithEntity(QueryBuildEntity entity) {
         return entity.getBoolQueryBuilder();
     }
 
-    private SearchSourceBuilder getSourceBuilderWithEntity(ESSourceBuildEntity entity) {
+    private SearchSourceBuilder getSourceBuilderWithEntity(SourceBuildEntity entity) {
         return entity.getSourceBuilder();
     }
 
-    private List<SortBuilder> getSortBuildListWithEntity(ESSortBuildEntity entity) {
+    private List<SortBuilder> getSortBuildListWithEntity(SortBuildEntity entity) {
         return entity.getSortBuilderList();
     }
 }

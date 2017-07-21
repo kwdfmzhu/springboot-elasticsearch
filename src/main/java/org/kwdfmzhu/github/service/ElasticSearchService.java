@@ -1,9 +1,9 @@
 package org.kwdfmzhu.github.service;
 
 import org.elasticsearch.action.search.SearchResponse;
-import org.kwdfmzhu.github.bean.ESQueryBuildEntity;
-import org.kwdfmzhu.github.bean.ESSortBuildEntity;
-import org.kwdfmzhu.github.bean.ESSourceBuildEntity;
+import org.kwdfmzhu.github.bean.QueryBuildEntity;
+import org.kwdfmzhu.github.bean.SortBuildEntity;
+import org.kwdfmzhu.github.bean.SourceBuildEntity;
 
 /**
  * Created by kwdfmzhu on 2017/7/5.
@@ -95,7 +95,7 @@ public interface ElasticSearchService {
      * @param entity
      * @return
      */
-    SearchResponse search(String index, String type, ESQueryBuildEntity entity);
+    SearchResponse search(String index, String type, QueryBuildEntity entity);
 
     /**
      * 带过滤的搜索
@@ -104,9 +104,9 @@ public interface ElasticSearchService {
      * @param QBEntity
      * @return
      */
-    SearchResponse search(String index, String type, ESQueryBuildEntity QBEntity, ESSourceBuildEntity SBEntity);
+    SearchResponse search(String index, String type, QueryBuildEntity QBEntity, SourceBuildEntity SBEntity);
 
-    SearchResponse scrollSearch(String[] indices, String[] types, ESQueryBuildEntity QBEntity);
-    SearchResponse scrollSearch(String[] indices, String[] types, ESQueryBuildEntity QBEntity, ESSourceBuildEntity ScBEntity, ESSortBuildEntity StBEntity);
+    SearchResponse scrollSearch(String[] indices, String[] types, QueryBuildEntity QBEntity);
+    SearchResponse scrollSearch(String[] indices, String[] types, QueryBuildEntity QBEntity, SourceBuildEntity ScBEntity, SortBuildEntity StBEntity);
     SearchResponse scrollSearch(String scrollId);
 }

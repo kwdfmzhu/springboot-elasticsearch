@@ -3,20 +3,20 @@ package org.kwdfmzhu.github.bean;
 /**
  * Created by kwdfmzhu on 2017/7/5.
  */
-public class RangeQueryBuilderEntity {
+public class RangeQueryTypeEntity {
     private Object from;
     private Object to;
     private boolean includeLower;
     private boolean includeUpper;
 
-    public RangeQueryBuilderEntity(Object from, Object to, boolean includeLower, boolean includeUpper) {
+    public RangeQueryTypeEntity(Object from, Object to, boolean includeLower, boolean includeUpper) {
         this.from = from;
         this.to = to;
         this.includeLower = includeLower;
         this.includeUpper = includeUpper;
     }
 
-    public RangeQueryBuilderEntity(Object from, Object to) {
+    public RangeQueryTypeEntity(Object from, Object to) {
         this.from = from;
         this.to = to;
         this.includeLower = true;

@@ -1,6 +1,5 @@
 package org.kwdfmzhu.github.service;
 
-import com.alibaba.fastjson.JSON;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
@@ -15,8 +14,8 @@ import java.util.Map;
 /**
  * Created by kwdfmzhu on 2017/7/5.
  */
-public class ESSearchResponseParser {
-    private static final Logger logger = LoggerFactory.getLogger(ESSearchResponseParser.class);
+public class SearchResponseParser {
+    private static final Logger logger = LoggerFactory.getLogger(SearchResponseParser.class);
 
     private Aggregations aggregations;
 
@@ -24,8 +23,8 @@ public class ESSearchResponseParser {
 
     private String scrollId;
 
-    public static ESSearchResponseParser parse(SearchResponse response) {
-        ESSearchResponseParser parser = new ESSearchResponseParser(response);
+    public static SearchResponseParser parse(SearchResponse response) {
+        SearchResponseParser parser = new SearchResponseParser(response);
         return parser;
     }
 
@@ -59,7 +58,7 @@ public class ESSearchResponseParser {
 //        return list;
 //    }
 
-    private ESSearchResponseParser(SearchResponse response) {
+    private SearchResponseParser(SearchResponse response) {
         this.init(response);
     }
 

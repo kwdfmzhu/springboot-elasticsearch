@@ -9,12 +9,12 @@ import java.util.List;
 /**
  * Created by kwdfmzhu on 2017/7/5.
  */
-public class ESSourceBuildEntity {
+public class SourceBuildEntity {
     private List<String> includes;
     private List<String> excludes;
     private SearchSourceBuilder sourceBuilder;
 
-    public ESSourceBuildEntity() {
+    public SourceBuildEntity() {
         this.includes = new ArrayList<>();
         this.excludes = new ArrayList<>();
     }

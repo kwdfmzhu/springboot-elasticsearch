@@ -11,13 +11,13 @@ import java.util.List;
 /**
  * Created by kwdfmzhu on 2017/7/5.
  */
-public class ESSortBuildEntity {
+public class SortBuildEntity {
     private List<String> ascList;
     private List<String> descList;
 
     private List<SortBuilder> sortBuilderList;
 
-    public ESSortBuildEntity() {
+    public SortBuildEntity() {
         this.ascList = new ArrayList<>();
         this.descList = new ArrayList<>();
     }
