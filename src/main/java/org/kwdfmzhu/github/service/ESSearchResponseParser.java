@@ -51,13 +51,13 @@ public class ESSearchResponseParser {
         return list;
     }
 
-    public List<T> getSourceAsList(Class<T> clazz) {
-        List<T> list = new ArrayList<>();
-        for (SearchHit hit : this.hitInfo.getHitList()) {
-            JSON.parseObject(hit.getSourceAsString(), clazz);
-        }
-        return list;
-    }
+//    public List<T> getSourceAsList(Class<T> clazz) {
+//        List<T> list = new ArrayList<>();
+//        for (SearchHit hit : this.hitInfo.getHitList()) {
+//            JSON.parseObject(hit.getSourceAsString(), clazz);
+//        }
+//        return list;
+//    }
 
     private ESSearchResponseParser(SearchResponse response) {
         this.init(response);
